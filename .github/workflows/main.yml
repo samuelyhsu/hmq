@@ -2,7 +2,6 @@ name: Go Build
 
 on:
   push:
-    branches: ["main", "master"]
     tags:
       - "v*"
 
@@ -34,12 +33,11 @@ jobs:
           GOARCH: ${{ matrix.platform.arch }}
         run: |
           mkdir -p release
-          go build -v -o "release/${GOOS}_${GOARCH}/hmq${{ matrix.platform.suffix }}" .
+          go build -v -o "release/${GOOS}_${GOARCH}/hmq_${GOOS}_${GOARCH}${{ matrix.platform.suffix }}" .
 
       - name: Upload artifacts
         uses: actions/upload-artifact@v4
         with:
-          name: ${{ matrix.platform.os }}-${{ matrix.platform.arch }}
           path: release/${{ matrix.platform.os }}_${{ matrix.platform.arch }}/
   release:
     name: Create Release
@@ -56,5 +54,6 @@ jobs:
       - name: Create Release
         uses: softprops/action-gh-release@v2
         with:
+          generate_release_notes: true
           files: |
-            artifacts/**/*
+            artifacts/*
